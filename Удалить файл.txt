@@ -1,0 +1,6 @@
+#Delete Notes completely (with a file)
+def remove_file(filename):
+    path = os.getcwd()
+    if os.path.isfile(filename):
+        os.remove(os.path.join(path, filename))
+        print(f'{filename} deleted')
