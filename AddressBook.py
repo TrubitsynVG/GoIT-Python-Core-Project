@@ -116,14 +116,3 @@ class AddressBook(UserDict):
         self.contacts.pop(name)
 
 
-'''    
-ab = AddressBook()
-ab.add_contact('borys', '83749824')
-ab.add_email('borys', 'ksjdflks@mail.com')
-ab.add_contact('serg', '8374982445')
-ab.add_email('serg', 'ksjdflksssr@mail.com')
-ab.add_contact('art', '8374982423')
-ab.add_email('art', 'kmnmsjdflks@mail.com')
-ab.add_contact('nok', '8374982489')
-ab.add_email('nok', 'ksjeckdflks@mail.com')
-'''
