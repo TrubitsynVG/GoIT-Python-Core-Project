@@ -1,11 +1,15 @@
 from pathlib import Path
+
 import os, time
 from collections import Counter
+
 from AddressBook import AddressBook
 
 AB = AddressBook()
 
+
 wrong = lambda: 'Wrong command!'
+
 
 def add_contact():
     name = input('Enter Name:')
@@ -15,6 +19,8 @@ def add_contact():
         return f'Contact {name} with phone number {phone} was created.'
     else:
         return f'Incorrect number. Try in format +380...'
+
+
 
 def add_email():
     name = input('Enter Name:')
@@ -31,6 +37,7 @@ def add_address():
     AB.add_address(name, address)
     return f'{name}`s address is {address}'
 
+
 def add_birthday():
     name = input('Enter Name:')
     birthday = input('Enter Birthday in format 01.01.1990:')
@@ -39,6 +46,7 @@ def add_birthday():
         return f'{name}`s birthday {birthday} has been saved'
     else:
         return f'Incorrect date'
+
 
 def change_contact():
     name = input('Enter Name:')
@@ -55,6 +63,7 @@ def find_contact():
 def nearby_birthday():
     n_days = input('Enter number of days: ')
     return AB.nearby_birthday(n_days)
+
 
 def delete_contact():
     name = input('Enter Name of the contact: ')
@@ -209,12 +218,14 @@ def get_handler(operator):
     
 def main():
     #Start of the cli
+
     if os.path.exists('data.json'):
         AB.deserialize()
     print('Hello, User!')
 
     while True:
         command = input('Enter your command: ')
+
         if command == '.' or command == 'exit' or command == 'close':
             AB.serialize()
             print('Goodbye, User!')
@@ -222,6 +233,7 @@ def main():
         handler = get_handler(command)
         answer = handler()
         print (answer)
+
 
 
 if __name__ == '__main__':
