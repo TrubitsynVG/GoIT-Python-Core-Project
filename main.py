@@ -1,9 +1,14 @@
 from pathlib import Path
-import os
-import pathlib
+
+import os, time
+from collections import Counter
+
 from AddressBook import AddressBook
 
 AB = AddressBook()
+
+
+wrong = lambda: 'Wrong command!'
 
 
 def add_contact():
@@ -16,6 +21,7 @@ def add_contact():
         return f'Incorrect number. Try in format +380...'
 
 
+
 def add_email():
     name = input('Enter Name:')
     email = input('Enter Email:')
@@ -25,12 +31,11 @@ def add_email():
     else:
         return f'Incorrect email'
 
-
 def add_address():
-    name = input('Enter Name:')
+    name =  input('Enter Name:')
     address = input('Enter Address:')
     AB.add_address(name, address)
-    return f'{name}`s address {address} has been saved'
+    return f'{name}`s address is {address}'
 
 
 def add_birthday():
@@ -45,21 +50,19 @@ def add_birthday():
 
 def change_contact():
     name = input('Enter Name:')
-    address = input('Enter address:')
-    phone = input('Enter phone:')
-    email = input('Enter email:')
-    birthday = input('Enter birthday:')
-    AB.change_contact(name, address, phone, email, birthday)
+    address = input('Enter Name:')
+    phone = input('Enter Name:')
+    email = input('Enter Name:')
+    birthday = input('Enter Name:')
+    AB.change_contact(name, address, phone, email,birthday)
     return f'{name}`s :\n Address: {address}, Phone: {phone}, Email: {email}, Birthday: {birthday}'
-
 
 def find_contact():
     return AB.search(input('Enter search info: '))
 
-
 def nearby_birthday():
-    n_days = input('Enter number of days')
-    return AB.nearby_birthday
+    n_days = input('Enter number of days: ')
+    return AB.nearby_birthday(n_days)
 
 
 def delete_contact():
@@ -67,42 +70,170 @@ def delete_contact():
     AB.delete_contact(name)
     return f'Contact {name} was deleted!'
 
-
 def show_contacts():
     return AB.contacts
 
+def create_new_note():
+    tags = input('Enter tags for note(less then 5): ')
+    note = input('Enter note text: ')
+    data = f'{tags}\n\n{note}'
+    t = str(time.time()).split('.')[0]
+    filename = t+".txt" #Name would be similar to 1630063227.txt    
+    try:
+        with open(filename, "w") as file:
+            file.write(data)            
+    except IOError:
+        print("File not accessible")
+    return f'writing to, {filename}' #Display in console
+
+def delete_note():
+    filename = input("Enter FileName: ")
+    path = os.getcwd()
+    if os.path.isfile(filename):
+        os.remove(os.path.join(path, filename))
+        return f'{filename} deleted'
+    else:
+        return 'wrong FileName'
+
+def note_search():
+    note = input('note: ')
+    __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
+    flist = []
+
+    files = [f for f in os.listdir('.') if os.path.isfile(f)]
+    for filename in files:
+        try:
+            with open(os.path.join(__location__, filename), encoding='utf-8') as currentFile:
+                text = currentFile.readlines()
+                if (note.lower() in text[1].lower()): #Note we're looking for in the second line, lowercase
+                    flist.append(filename[:-4])
+        except:
+            print(f"{filename} contains less than 2 strings or cannot be opened")
+
+    result = Counter(flist)
+    if not result:
+        return 'No match!'
+    else:
+        res = 'Matches in Files:\n'
+        for key, value in result.items():
+            res += f'{value} : {key}\n'
+        return res
+
+def note_update():
+    #file_to_open = 'data.txt' #filename input.
+    file_to_open = input('Enter FileName: ')
+    try:
+        with open(file_to_open, 'r') as file:            
+            data = file.readlines()
+            
+        
+        print('Current note is:')
+        print(data[1][:-1])
+        note = input("Update a note: ") + '\n' #note input
+        data[-1] = note
+        print(f'Note updated to: {note}')
+
+        with open(file_to_open, 'w') as file:
+            file.writelines(data)
+            
+
+    except IOError:
+        print("File not accessible")
+
+def Tag_Search_Helper(tag: str, flist: list, filename: str, text: str):
+    if tag != '%%%%%%%%%%' and (tag.lower() in text[0].lower()): #Tag we're looking for in the first line, lowercase
+        flist.append(filename[:-4])
+    return flist
+
+def Tag_Search():
+    tags = input('Enter six tags: ')
+    tags = tags.split(' ')
+    __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
+    flist=[]
+
+    files = [f for f in os.listdir('.') if os.path.isfile(f)]
+    for filename in files:
+        try:
+            with open(os.path.join(__location__, filename), encoding='utf-8') as currentFile:
+                text = currentFile.readlines()
+                flist = Tag_Search_Helper(tag[0], flist, filename, text)
+                flist = Tag_Search_Helper(tag[1], flist, filename, text)
+                flist = Tag_Search_Helper(tag[2], flist, filename, text)
+                flist = Tag_Search_Helper(tag[3], flist, filename, text)
+                flist = Tag_Search_Helper(tag[4], flist, filename, text)
+                flist = Tag_Search_Helper(tag[5], flist, filename, text)
+
+        except:
+            print(f"{filename} contains less than 2 strings or cannot be opened")
+
+    result = Counter(flist)
+    print("Matches in Files:")
+    for key, value in result.items():
+        print(f'{value} : {key}')
+
+def Tag_update():
+    #file_to_open = 'data.txt' #filename input.
+    file_to_open = input('Enter FileName: ')
+    try:
+        with open(file_to_open, 'r') as file:
+            data = file.readlines()           
+        
+        print('Current tags are:')
+        print(data[0][:-1])
+        tags = input("Write tags: ") + '\n' #tags input
+        data[0] = tags
+        
+
+        with open(file_to_open, 'w') as file:
+            file.writelines(data)
+
+    except IOError:
+        print("File not accessible")
+    return f'Tags updated to: {tags}'
 
 OPERATIONS = {
-    'add contact': add_contact,
-    'add address': add_address,
-    'add email': add_email,
-    'add birthday': add_birthday,
-    'change contact': change_contact,
-    'find contact': find_contact,
-    'near birthday': nearby_birthday,  # don`t work
-    'delete contact': delete_contact,
-    'show contacts': show_contacts
-}
-
+    'add contact' : add_contact,
+    'add address' : add_address,
+    'add email' : add_email,
+    'add birthday' : add_birthday,
+    'change contact' : change_contact,
+    'find contact' : find_contact,
+    'near birthday' : nearby_birthday,
+    'delete contact' : delete_contact,
+    'show contacts' : show_contacts,
+    'create note' : create_new_note,
+    'delete note' : delete_note,
+    'change note' : note_update,
+    'change tag' : Tag_update,
+    'search notes by tags' : Tag_Search,
+    'search notes by text' : note_search
+    }
 
 def get_handler(operator):
+    if not OPERATIONS.get(operator):
+        return wrong
     return OPERATIONS[operator]
 
 
+    
 def main():
-    # Start of the cli
+    #Start of the cli
+
     if os.path.exists('data.json'):
         AB.deserialize()
     print('Hello, User!')
 
     while True:
         command = input('Enter your command: ')
-        if command == 'exit':
+
+        if command == '.' or command == 'exit' or command == 'close':
             AB.serialize()
+            print('Goodbye, User!')
             break
         handler = get_handler(command)
         answer = handler()
-        print(answer)
+        print (answer)
+
 
 
 if __name__ == '__main__':
