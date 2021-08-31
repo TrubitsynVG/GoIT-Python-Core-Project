@@ -21,7 +21,7 @@ def add_email():
     email = input('Enter Email:')
     if AB.validate_email(email):
         AB.add_email(name, email)
-        return f'{name}`s email {email} added'
+        return f'{name}`s email {email} has been saved'
     else:
         return f'Incorrect email'
 
@@ -30,14 +30,17 @@ def add_address():
     name = input('Enter Name:')
     address = input('Enter Address:')
     AB.add_address(name, address)
-    return f'{name}`s address is {address}'
+    return f'{name}`s address {address} has been saved'
 
 
 def add_birthday():
     name = input('Enter Name:')
-    birthday = input('Enter Birthday:')
-    AB.add_birthday(name, birthday)
-    return f'{name}`s birthday is {birthday}'
+    birthday = input('Enter Birthday in format 01.01.1990:')
+    if AB.validate_birthday(birthday):
+        AB.add_birthday(name, birthday)
+        return f'{name}`s birthday {birthday} has been saved'
+    else:
+        return f'Incorrect date'
 
 
 def change_contact():

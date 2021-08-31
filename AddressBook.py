@@ -93,8 +93,11 @@ class AddressBook(UserDict):
         else:
             return False
 
-    def validate_birthday(self):
-        pass
+    def validate_birthday(self, date: str):
+        if re.match('^\d{2}.\d{2}.\d{4}$', date):
+            return True
+        else:
+            return False
 
     # Поиск по контактам. пока не знаю. будем только по имени или по всем параметрам????
     def search(self, string):
