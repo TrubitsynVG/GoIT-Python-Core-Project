@@ -2,7 +2,7 @@ from pathlib import Path
 import shutil
 import os, time
 from collections import Counter
-
+import sys
 from AddressBook import AddressBook
 
 AB = AddressBook()
@@ -408,8 +408,6 @@ def get_handler(operator):
         return wrong
     return OPERATIONS[operator]
 
-
-    
 def main():
     #Start of the cli
 
@@ -427,6 +425,9 @@ def main():
         handler = get_handler(command)
         answer = handler()
         print (answer)
+    
+
+    
 
 
 
