@@ -1,14 +1,16 @@
 from pathlib import Path
 import shutil
-import os, time
+import os
+import time
 from collections import Counter
+from prettytable import PrettyTable
 import sys
 from AddressBook import AddressBook
 
 AB = AddressBook()
 
 
-wrong = lambda: 'Wrong command!'
+def wrong(): return 'Wrong command!'
 
 
 def add_contact():
@@ -21,7 +23,6 @@ def add_contact():
         return f'Incorrect number. Try in format +380...'
 
 
-
 def add_email():
     name = input('Enter Name:')
     email = input('Enter Email:')
@@ -31,8 +32,9 @@ def add_email():
     else:
         return f'Incorrect email'
 
+
 def add_address():
-    name =  input('Enter Name:')
+    name = input('Enter Name:')
     address = input('Enter Address:')
     AB.add_address(name, address)
     return f'{name}`s address is {address}'
@@ -54,11 +56,13 @@ def change_contact():
     phone = input('Enter Name:')
     email = input('Enter Name:')
     birthday = input('Enter Name:')
-    AB.change_contact(name, address, phone, email,birthday)
+    AB.change_contact(name, address, phone, email, birthday)
     return f'{name}`s :\n Address: {address}, Phone: {phone}, Email: {email}, Birthday: {birthday}'
+
 
 def find_contact():
     return AB.search(input('Enter search info: '))
+
 
 def nearby_birthday():
     n_days = input('Enter number of days: ')
@@ -70,21 +74,24 @@ def delete_contact():
     AB.delete_contact(name)
     return f'Contact {name} was deleted!'
 
+
 def show_contacts():
     return AB.contacts
+
 
 def create_new_note():
     tags = input('Enter tags for note(less then 5): ')
     note = input('Enter note text: ')
     data = f'{tags}\n\n{note}'
     t = str(time.time()).split('.')[0]
-    filename = t+".txt" #Name would be similar to 1630063227.txt    
+    filename = t+".txt"  # Name would be similar to 1630063227.txt
     try:
         with open(filename, "w") as file:
-            file.write(data)            
+            file.write(data)
     except IOError:
         print("File not accessible")
-    return f'writing to, {filename}' #Display in console
+    return f'writing to, {filename}'  # Display in console
+
 
 def delete_note():
     filename = input("Enter FileName: ")
@@ -95,9 +102,11 @@ def delete_note():
     else:
         return 'wrong FileName'
 
+
 def note_search():
     note = input('note: ')
-    __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
+    __location__ = os.path.realpath(os.path.join(
+        os.getcwd(), os.path.dirname(__file__)))
     flist = []
 
     files = [f for f in os.listdir('.') if os.path.isfile(f)]
@@ -105,7 +114,8 @@ def note_search():
         try:
             with open(os.path.join(__location__, filename), encoding='utf-8') as currentFile:
                 text = currentFile.readlines()
-                if (note.lower() in text[1].lower()): #Note we're looking for in the second line, lowercase
+                # Note we're looking for in the second line, lowercase
+                if (note.lower() in text[1].lower()):
                     flist.append(filename[:-4])
         except:
             print(f"{filename} contains less than 2 strings or cannot be opened")
@@ -119,37 +129,57 @@ def note_search():
             res += f'{value} : {key}\n'
         return res
 
+
 def note_update():
-    #file_to_open = 'data.txt' #filename input.
+    # file_to_open = 'data.txt' #filename input.
     file_to_open = input('Enter FileName: ')
     try:
-        with open(file_to_open, 'r') as file:            
+        with open(file_to_open, 'r') as file:
             data = file.readlines()
-            
-        
+
         print('Current note is:')
         print(data[1][:-1])
-        note = input("Update a note: ") + '\n' #note input
+        note = input("Update a note: ") + '\n'  # note input
         data[-1] = note
         print(f'Note updated to: {note}')
 
         with open(file_to_open, 'w') as file:
             file.writelines(data)
-            
 
     except IOError:
         print("File not accessible")
 
+
+def pretty_commands():
+    table = PrettyTable()
+    table.title = 'Use these commands bellow or "exit" to stop work'
+    table.field_names = ['ADD INFO', 'CHANGE INFO',
+                         'Notes&Tags', 'Additionally']
+
+    table.add_rows(
+        [
+            ['add contact', 'change contact', 'create note', 'near birthday'],
+            ['add address', 'find contact', 'change note', 'search notes by tags'],
+            ['add email', 'show contacts', 'change tag', 'search notes by text'],
+            ['add birthday', 'delete contact', 'delete note', 'sorting files']
+        ]
+    )
+    return table
+
+
 def Tag_Search_Helper(tag: str, flist: list, filename: str, text: str):
-    if tag != '%%%%%%%%%%' and (tag.lower() in text[0].lower()): #Tag we're looking for in the first line, lowercase
+    # Tag we're looking for in the first line, lowercase
+    if tag != '%%%%%%%%%%' and (tag.lower() in text[0].lower()):
         flist.append(filename[:-4])
     return flist
+
 
 def Tag_Search():
     tags = input('Enter six tags: ')
     tags = tags.split(' ')
-    __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
-    flist=[]
+    __location__ = os.path.realpath(os.path.join(
+        os.getcwd(), os.path.dirname(__file__)))
+    flist = []
 
     files = [f for f in os.listdir('.') if os.path.isfile(f)]
     for filename in files:
@@ -171,18 +201,18 @@ def Tag_Search():
     for key, value in result.items():
         print(f'{value} : {key}')
 
+
 def Tag_update():
-    #file_to_open = 'data.txt' #filename input.
+    # file_to_open = 'data.txt' #filename input.
     file_to_open = input('Enter FileName: ')
     try:
         with open(file_to_open, 'r') as file:
-            data = file.readlines()           
-        
+            data = file.readlines()
+
         print('Current tags are:')
         print(data[0][:-1])
-        tags = input("Write tags: ") + '\n' #tags input
+        tags = input("Write tags: ") + '\n'  # tags input
         data[0] = tags
-        
 
         with open(file_to_open, 'w') as file:
             file.writelines(data)
@@ -191,18 +221,18 @@ def Tag_update():
         print("File not accessible")
     return f'Tags updated to: {tags}'
 
-def sorting_files ():
-    
+
+def sorting_files():
+
     p = input('Enter to the path to the directory: ')
-    
+
     print(f'Started in {p}')
-    
+
     images_list = list()
     video_list = list()
     documents_list = list()
     music_list = list()
-    archives_list =  list()
-
+    archives_list = list()
 
     suffix_imeges = ".jpeg", ".png", ".jpg"
     suffix_videos = ".avi", ".mp4", ".mov"
@@ -211,7 +241,6 @@ def sorting_files ():
     suffix_archiv = ".zip", ".tar", ".gztar", ".bztar", ".xztar"
 
     ignor = "archives", "images", "music", "videos", "documents"
-
 
     def normalize(p):
 
@@ -279,7 +308,7 @@ def sorting_files ():
                     ord('э'): 'eh',
                     ord('ю'): 'ju',
                     ord('я'): 'ja'}
-        
+
         for root, dirs, files in os.walk(p):
             for dir in dirs:
                 d = os.path.join(root, dir)
@@ -290,29 +319,27 @@ def sorting_files ():
                 if os.path.exists(y):
                     os.rename(y, y.translate(alphabet))
 
-
     def serch(p):
 
         for i in os.listdir(p):
             if i not in ignor:
-                if os.path.isdir(p +"\\" + i):
+                if os.path.isdir(p + "\\" + i):
                     serch(p + "\\" + i)
- 
+
         for root, dirs, files in os.walk(p):
             for file in files:
                 i = os.path.join(root, file)
                 sort_file(i, file)
                 unpuck_archives(i, file)
-                
+
             for folder in dirs:
                 f = os.path.join(root, folder)
                 remove_folder(f)
 
-
     def creat_folder():
 
         if len(images_list) != 0:
-            if not os.path.exists(p +"\\images"):
+            if not os.path.exists(p + "\\images"):
                 os.mkdir(p + "\\images")
 
         if len(video_list) != 0:
@@ -326,11 +353,10 @@ def sorting_files ():
         if len(music_list) != 0:
             if not os.path.exists(p + "\\music"):
                 os.mkdir(p + "\\music")
-        
-        if len(archives_list) !=0:
+
+        if len(archives_list) != 0:
             if not os.path.exists(p + "\\archives"):
                 os.mkdir(p + "\\archives")
-
 
     def sort_file(i, file):
 
@@ -338,23 +364,23 @@ def sorting_files ():
             if file not in images_list:
                 images_list.append(file)
             creat_folder()
-            if  i != p + "\\images" + "\\" + file:
+            if i != p + "\\images" + "\\" + file:
                 os.replace(i, p + "\\images" + "\\" + file)
-        
+
         elif file.endswith(suffix_videos):
             if file not in video_list:
                 video_list.append(file)
             creat_folder()
             if i != p + "\\videos" + "\\" + file:
-                os.replace(i , p + "\\videos" + "\\" + file)
-        
+                os.replace(i, p + "\\videos" + "\\" + file)
+
         elif file.endswith(suffix_documents):
             if file not in documents_list:
                 documents_list.append(file)
             creat_folder()
             if i != p + "\\documents" + "\\" + file:
                 os.replace(i, p + "\\documents" + "\\" + file)
-        
+
         elif file.endswith(suffix_music):
             if file not in music_list:
                 music_list.append(file)
@@ -362,11 +388,9 @@ def sorting_files ():
             if i != p + "\\music" + "\\" + file:
                 os.replace(i, p + "\\music" + "\\" + file)
 
-
     def remove_folder(f):
         if not os.listdir(f):
             os.removedirs(f)
-
 
     def unpuck_archives(i, file):
 
@@ -375,8 +399,8 @@ def sorting_files ():
                 archives_list.append(file)
             creat_folder()
             name_folder_archive = file.split(".")
-            shutil.unpack_archive(i, p + "\\archives"+ "\\" + name_folder_archive[0])
-
+            shutil.unpack_archive(i, p + "\\archives" +
+                                  "\\" + name_folder_archive[0])
 
     normalize(p)
     serch(p)
@@ -385,35 +409,39 @@ def sorting_files ():
 
 
 OPERATIONS = {
-    'add contact' : add_contact,
-    'add address' : add_address,
-    'add email' : add_email,
-    'add birthday' : add_birthday,
-    'change contact' : change_contact,
-    'find contact' : find_contact,
-    'near birthday' : nearby_birthday,
-    'delete contact' : delete_contact,
-    'show contacts' : show_contacts,
-    'create note' : create_new_note,
-    'delete note' : delete_note,
-    'change note' : note_update,
-    'change tag' : Tag_update,
-    'search notes by tags' : Tag_Search,
-    'search notes by text' : note_search,
-    'sorting files' : sorting_files  
-    }
+    'add contact': add_contact,
+    'add address': add_address,
+    'add email': add_email,
+    'add birthday': add_birthday,
+    'change contact': change_contact,
+    'find contact': find_contact,
+    'near birthday': nearby_birthday,
+    'delete contact': delete_contact,
+    'show contacts': show_contacts,
+    'create note': create_new_note,
+    'delete note': delete_note,
+    'change note': note_update,
+    'change tag': Tag_update,
+    'search notes by tags': Tag_Search,
+    'search notes by text': note_search,
+    'sorting files': sorting_files,
+    'help': pretty_commands
+}
+
 
 def get_handler(operator):
     if not OPERATIONS.get(operator):
         return wrong
     return OPERATIONS[operator]
 
+
 def main():
-    #Start of the cli
+    # Start of the cli
 
     if os.path.exists('data.json'):
         AB.deserialize()
     print('Hello, User!')
+    print(pretty_commands())
 
     while True:
         command = input('Enter your command: ')
@@ -424,11 +452,7 @@ def main():
             break
         handler = get_handler(command)
         answer = handler()
-        print (answer)
-    
-
-    
-
+        print(answer)
 
 
 if __name__ == '__main__':
