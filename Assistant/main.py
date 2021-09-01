@@ -52,10 +52,10 @@ def add_birthday():
 
 def change_contact():
     name = input('Enter Name:')
-    address = input('Enter Name:')
-    phone = input('Enter Name:')
-    email = input('Enter Name:')
-    birthday = input('Enter Name:')
+    address = input('Enter Address:')
+    phone = input('Enter Phone (+380...):')
+    email = input('Enter Email:')
+    birthday = input('Enter Birthday (xx.xx.xxxx):')
     AB.change_contact(name, address, phone, email, birthday)
     return f'{name}`s :\n Address: {address}, Phone: {phone}, Email: {email}, Birthday: {birthday}'
 
@@ -76,7 +76,14 @@ def delete_contact():
 
 
 def show_contacts():
-    return AB.contacts
+    pretty_contacts = PrettyTable()
+    pretty_contacts.field_names = [
+        'Name', 'Address', 'Phone', 'Email', 'Birthday']
+
+    for k, v in AB.contacts.items():
+        pretty_contacts.add_row(
+            [k, v['Address'], v['Phone'], v['Email'], v['Birthday']])
+    return pretty_contacts
 
 
 def create_new_note():
@@ -440,7 +447,7 @@ def main():
 
     if os.path.exists('data.json'):
         AB.deserialize()
-    print('Hello, User!')
+    print('Hello, User! Welcome to our CLI-bot')
     print(pretty_commands())
 
     while True:
@@ -448,7 +455,7 @@ def main():
 
         if command == '.' or command == 'exit' or command == 'close':
             AB.serialize()
-            print('Goodbye, User!')
+            print('Goodbye!')
             break
         handler = get_handler(command)
         answer = handler()
